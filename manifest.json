@@ -1,0 +1,79 @@
+{
+  "manifest_version": 3,
+  "name": "QuizMind Yandex",
+  "description": "QuizMind Yandex — помощник для вопросов и тестов в Яндекс Формах через RouterAI.",
+  "version": "1.0.0",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "downloads"
+  ],
+  "host_permissions": [
+    "https://forms.yandex.ru/*",
+    "https://routerai.ru/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "options.html",
+  "commands": {
+    "screenshot-answer": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+U",
+        "mac": "Command+Shift+U"
+      },
+      "description": "Сделать скриншот и найти ответ по изображению"
+    },
+    "toggle-extension-enabled": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L",
+        "mac": "Command+Shift+L"
+      },
+      "description": "Включить или выключить расширение"
+    },
+    "yandex-question": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+H",
+        "mac": "Command+Shift+H"
+      },
+      "description": "Ответить на выбранный вопрос Яндекс Формы"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://forms.yandex.ru/*"],
+      "js": ["i18n.js", "routeraiUiPatch.js", "settingsStorage.js", "themeEngine.js", "content/qm-shared.js", "content/qm-windows.js", "content/qm-hotkeys.js", "content/qm-yandex-forms.js", "content/qm-quiz.js", "content/qm-markdown.js", "content/qm-logger.js", "content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "QuizMind Yandex",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "assets/icon16.png",
+      "32": "assets/icon32.png",
+      "48": "assets/icon48.png",
+      "128": "assets/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icon16.png",
+    "32": "assets/icon32.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/widget-icons/*.svg",
+        "assets/window-icons/*.svg"
+      ],
+      "matches": [
+        "https://forms.yandex.ru/*"
+      ]
+    }
+  ]
+}

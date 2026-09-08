@@ -1,0 +1,2335 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QuizMind Yandex — Settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --blue:        #2563eb;
+        --blue-light:  #eff6ff;
+        --blue-hover:  #1d4ed8;
+        --green:       #16a34a;
+        --red:         #dc2626;
+        --red-light:   #fff5f5;
+        --border:      #e2e8f0;
+        --border-dark: #cbd5e1;
+        --text:        #0f172a;
+        --text-2:      #334155;
+        --muted:       #64748b;
+        --bg:          #f8fafc;
+        --surface:     #ffffff;
+        --shadow-sm:   0 1px 3px rgba(15,23,42,0.08), 0 1px 2px rgba(15,23,42,0.04);
+        --shadow:      0 4px 16px rgba(15,23,42,0.10), 0 1px 4px rgba(15,23,42,0.06);
+        --radius:      12px;
+        --font:        'Manrope', -apple-system, sans-serif;
+        --mono:        'IBM Plex Mono', 'SF Mono', monospace;
+        --section-scroll-offset: 0px;
+        --panel-transition: 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: var(--font);
+        background:
+          radial-gradient(circle at 50% -200px, #dbeafe 0%, rgba(219,234,254,0) 55%),
+          var(--bg);
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.5;
+        padding: 30px 22px 56px;
+        min-height: 100vh;
+      }
+
+      html { scroll-behavior: smooth; }
+
+      /* ── layout ── */
+      .page-wrap {
+        width: min(1120px, 100%);
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .layout-shell {
+        display: grid;
+        grid-template-columns: 258px minmax(0, 1fr);
+        gap: 20px;
+        align-items: start;
+      }
+
+      .sidebar-column {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        position: sticky;
+        top: 16px;
+        /* overflow: hidden clips content to border-radius; nav wrapper scrolls internally */
+        overflow: hidden;
+        max-height: calc(100vh - 32px);
+        border-radius: 16px;
+        background: linear-gradient(165deg, rgba(255,255,255,0.82) 0%, rgba(241,248,255,0.72) 100%);
+        backdrop-filter: blur(18px) saturate(1.18);
+        -webkit-backdrop-filter: blur(18px) saturate(1.18);
+        border: 1px solid rgba(255,255,255,0.62);
+        box-shadow: 0 12px 36px rgba(15,23,42,0.09), 0 1px 0 rgba(255,255,255,0.55) inset, inset 0 0 0 1px rgba(255,255,255,0.18);
+      }
+
+      .settings-main {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      /* ── Content area (panel host) ── */
+      .content-area {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      /* ════════════════════════════════════════════
+         PANEL-BASED SECTION NAVIGATION
+      ════════════════════════════════════════════ */
+
+      /* Each section panel: hidden by default */
+      .settings-panel {
+        display: none;
+      }
+
+      /* Active panel: animate in, show content */
+      .settings-panel.is-active {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        animation: panel-in var(--panel-transition) both;
+      }
+
+      @keyframes panel-in {
+        from {
+          opacity: 0;
+          transform: translateY(14px) scale(0.99);
+        }
+        60% { opacity: 1; }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* ── Sidebar Logo area ── */
+      .sidebar-logo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 18px 16px 12px;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+        background: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(248,252,255,0.4) 100%);
+        flex-shrink: 0;
+      }
+
+      .sidebar-edition {
+        margin-top: 5px;
+        color: #b91c1c;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+
+      .sidebar-logo .quizmind-logo {
+        width: min(100%, 172px);
+        height: auto;
+        display: block;
+        filter: var(--qm-logo-filter, none);
+        transition: transform 0.25s ease, opacity 0.25s ease, filter 0.25s ease;
+      }
+
+      .sidebar-logo .quizmind-logo:hover {
+        transform: scale(1.015);
+        opacity: 0.92;
+      }
+
+      /* ── Sidebar nav wrapper ── */
+      .sidebar-nav-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px 10px 12px;
+        scrollbar-gutter: stable;
+      }
+
+      /* ── Sidebar search in panel ── */
+      .sidebar-search-wrap {
+        padding: 10px 10px 0;
+        flex-shrink: 0;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.45);
+        padding-bottom: 10px;
+      }
+
+      .settings-sidebar {
+        position: relative;
+        background: transparent;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
+        border: none;
+      }
+
+      .sidebar-title {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: var(--muted);
+        font-weight: 800;
+        padding: 4px 8px 6px;
+        display: none; /* Hidden — groups provide context */
+      }
+
+      .sidebar-groups {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .sidebar-group {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding-top: 2px;
+      }
+
+      .sidebar-group + .sidebar-group {
+        border-top: 1px solid rgba(203, 213, 225, 0.38);
+        padding-top: 8px;
+        margin-top: 2px;
+      }
+
+      .sidebar-group-title {
+        font-size: 9.5px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-weight: 800;
+        color: #94a3b8;
+        padding: 2px 10px 3px;
+        margin-top: 2px;
+      }
+
+      .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .sidebar-link {
+        text-decoration: none;
+        color: var(--text-2);
+        font-size: 12.5px;
+        font-weight: 600;
+        border-radius: 9px;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        transition:
+          background   0.20s cubic-bezier(0.22, 1, 0.36, 1),
+          color        0.20s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow   0.20s cubic-bezier(0.22, 1, 0.36, 1),
+          transform    0.20s cubic-bezier(0.34, 1.26, 0.64, 1);
+        position: relative;
+      }
+
+      .sidebar-link::before {
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0;
+        flex-shrink: 0;
+        transition:
+          opacity   0.20s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transform: scale(0);
+      }
+
+      .sidebar-link:hover {
+        background: rgba(239, 246, 255, 0.90);
+        color: #1e40af;
+        box-shadow: inset 0 0 0 1px rgba(191, 219, 254, 0.65);
+        transform: translateX(2px);
+      }
+
+      .sidebar-link:hover::before {
+        opacity: 0.5;
+        transform: scale(1);
+      }
+
+      .sidebar-link:active {
+        transform: translateX(1px) scale(0.98);
+      }
+
+      .sidebar-link.is-active {
+        background: linear-gradient(135deg, rgba(59,130,246,0.14) 0%, rgba(37,99,235,0.09) 100%);
+        color: #1d4ed8;
+        font-weight: 700;
+        box-shadow:
+          inset 0 0 0 1px rgba(59,130,246,0.30),
+          0 3px 10px rgba(37,99,235,0.12);
+        transform: translateX(2px);
+      }
+
+      .sidebar-link.is-active::before {
+        opacity: 1;
+        transform: scale(1);
+        background: #2563eb;
+      }
+
+      .sidebar-link.is-filtered-out,
+      .sidebar-group.is-filtered-out {
+        display: none;
+      }
+
+      /* ── page header (removed from main content — now in sidebar) ── */
+      .page-header { display: none; }
+
+      .quizmind-logo {
+        width: min(100%, 260px);
+        height: auto;
+        display: block;
+        filter: var(--qm-logo-filter, none);
+        transition: transform 0.25s ease, opacity 0.25s ease, filter 0.25s ease;
+      }
+
+      .settings-search {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 10px 10px 10px;
+        border-radius: 0;
+        border: none;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.45);
+        background: transparent;
+        backdrop-filter: none;
+        box-shadow: none;
+        transition: none;
+        flex-shrink: 0;
+      }
+
+      .settings-search:hover {
+        transform: none;
+        box-shadow: none;
+        border-color: rgba(226, 232, 240, 0.45);
+      }
+
+      .settings-search-label {
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: #94a3b8;
+        padding-left: 2px;
+      }
+
+      #settingsSearch {
+        height: 36px;
+        padding: 0 12px 0 14px;
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.75);
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        font-size: 12.5px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+      }
+
+      #settingsSearch::placeholder {
+        color: #94a3b8;
+        transition: color 0.2s ease;
+      }
+
+      #settingsSearch:hover {
+        border-color: rgba(96, 165, 250, 0.6);
+        background: rgba(255, 255, 255, 0.9);
+      }
+
+      #settingsSearch:focus {
+        border-color: rgba(37, 99, 235, 0.75);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14), 0 8px 18px rgba(37, 99, 235, 0.12);
+        background: rgba(255, 255, 255, 0.96);
+      }
+
+      #settingsSearch:focus::placeholder {
+        color: #64748b;
+      }
+
+      .search-empty-state {
+        border: 1px dashed rgba(148, 163, 184, 0.6);
+        border-radius: 12px;
+        padding: 22px 16px;
+        font-size: 13px;
+        color: #64748b;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.56);
+      }
+
+      .card.is-filtered-out {
+        display: none;
+      }
+
+      .card.section-jump-highlight::after {
+        animation: section-jump-highlight 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+
+      @keyframes section-jump-highlight {
+        0% {
+          opacity: 0;
+          border-color: rgba(59, 130, 246, 0);
+          box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+          background: rgba(219, 234, 254, 0);
+        }
+        18% {
+          opacity: 1;
+          border-color: rgba(59, 130, 246, 0.82);
+          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.24), inset 0 0 0 999px rgba(219, 234, 254, 0.24);
+          background: rgba(219, 234, 254, 0.18);
+        }
+        72% {
+          opacity: 1;
+          border-color: rgba(59, 130, 246, 0.45);
+          box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.18), inset 0 0 0 999px rgba(219, 234, 254, 0.12);
+          background: rgba(219, 234, 254, 0.1);
+        }
+        100% {
+          opacity: 0;
+          border-color: rgba(59, 130, 246, 0);
+          box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+          background: rgba(219, 234, 254, 0);
+        }
+      }
+
+      /* ── card ── */
+      .card {
+        position: relative;
+        z-index: 0;
+        background: linear-gradient(165deg, rgba(255,255,255,0.82) 0%, rgba(248,252,255,0.76) 100%);
+        border: 1px solid rgba(226, 232, 240, 0.88);
+        border-radius: 14px;
+        box-shadow:
+          0 1px 0 rgba(255,255,255,0.65) inset,
+          0 10px 28px rgba(15, 23, 42, 0.07),
+          0 1px 3px rgba(15, 23, 42, 0.04);
+        backdrop-filter: blur(12px) saturate(1.1);
+        -webkit-backdrop-filter: blur(12px) saturate(1.1);
+        overflow: hidden;
+        transition:
+          transform    0.28s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow   0.28s cubic-bezier(0.22, 1, 0.36, 1),
+          border-color 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      /* Glass top-highlight layer */
+      .card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 40%;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.20) 0%,
+          rgba(255, 255, 255, 0.00) 100%
+        );
+        border-radius: 14px 14px 0 0;
+        pointer-events: none;
+        opacity: 0.5;
+        transition: opacity 0.30s cubic-bezier(0.22, 1, 0.36, 1);
+        z-index: 0;
+      }
+
+      .card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        border: 2px solid transparent;
+        pointer-events: none;
+        opacity: 0;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 2px 0 rgba(255,255,255,0.80) inset,
+          0 18px 40px rgba(15, 23, 42, 0.11),
+          0 4px 10px rgba(15, 23, 42, 0.05),
+          0 0 0 1px rgba(191, 219, 254, 0.30);
+        border-color: rgba(196, 218, 244, 0.95);
+      }
+
+      .card:hover::before {
+        opacity: 1;
+      }
+
+      @keyframes card-in {
+        from { opacity: 0; transform: translateY(8px) scale(0.99); }
+        60%  { opacity: 1; }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      /* Cards inside active panels animate in — extended stagger */
+      .settings-panel.is-active .card {
+        animation: card-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
+      .settings-panel.is-active .card:nth-child(2) { animation-delay: 0.05s; }
+      .settings-panel.is-active .card:nth-child(3) { animation-delay: 0.10s; }
+      .settings-panel.is-active .card:nth-child(4) { animation-delay: 0.15s; }
+      .settings-panel.is-active .card:nth-child(5) { animation-delay: 0.20s; }
+      .settings-panel.is-active .card:nth-child(6) { animation-delay: 0.25s; }
+
+      .card.primary {
+        border-color: rgba(210, 224, 244, 0.9);
+        box-shadow:
+          0 1px 0 rgba(255,255,255,0.75) inset,
+          0 8px 28px rgba(15, 23, 42, 0.08),
+          0 2px 6px rgba(15, 23, 42, 0.04);
+      }
+
+      .card.secondary {
+        background: linear-gradient(165deg, rgba(255,255,255,0.78) 0%, rgba(248,252,255,0.68) 100%);
+      }
+
+      .card.models-card,
+      .card.multi-card {
+        overflow: visible;
+      }
+
+      .card.models-card.model-dropdown-active,
+      .card.multi-card.model-dropdown-active {
+        z-index: 120;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 13px 18px;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.65);
+        background: linear-gradient(180deg, rgba(248,252,255,0.9) 0%, rgba(240,248,255,0.7) 100%);
+      }
+
+      .card-header-icon {
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--text-2, #334155);
+      }
+
+      .card-header-icon img {
+        width: 18px;
+        height: 18px;
+        display: block;
+        object-fit: contain;
+        filter: var(--qm-icon-filter, none);
+        transition: filter 0.2s ease;
+      }
+
+      .card-header h2 {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: var(--text-2);
+        text-transform: uppercase;
+      }
+
+      .card-subtitle {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 1px;
+      }
+
+      .card-body {
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .compact-card .card-body {
+        gap: 0;
+        padding: 6px 18px 10px;
+      }
+
+      /* ── field ── */
+      .field { display: flex; flex-direction: column; gap: 6px; }
+
+      label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-2);
+      }
+
+      .hint {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 1px;
+        line-height: 1.4;
+      }
+
+      input[type="password"],
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        height: 40px;
+        padding: 0 12px;
+        border: 1.5px solid var(--border-dark);
+        border-radius: 10px;
+        font-size: 13px;
+        font-family: var(--font);
+        background: var(--surface);
+        color: var(--text);
+        outline: none;
+        transition:
+          border-color     0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow       0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          background-color 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          transform        0.22s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      input:hover:not(:focus), select:hover:not(:focus) {
+        border-color: #93c5fd;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(37,99,235,0.08);
+      }
+
+      input:focus, select:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.15), 0 4px 14px rgba(37,99,235,0.10);
+        background: #fff;
+        transform: translateY(-1px);
+      }
+
+      .api-key-row { display: flex; gap: 8px; }
+      .api-key-row input { flex: 1; }
+
+      .eye-btn {
+        flex-shrink: 0;
+        width: 40px; height: 40px;
+        border: 1.5px solid var(--border-dark);
+        background: var(--surface);
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        color: var(--muted);
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.15s, border-color 0.15s, transform 0.15s;
+      }
+
+      .eye-btn-icon {
+        width: 24px;
+        height: 24px;
+        display: block;
+        filter: var(--qm-icon-filter, none);
+        transition: filter 0.2s ease;
+      }
+
+      .eye-btn { transition: background 0.22s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.22s cubic-bezier(0.22, 1, 0.36, 1), transform 0.28s cubic-bezier(0.34, 1.36, 0.64, 1), box-shadow 0.22s ease; }
+      .eye-btn:hover { background: #eff6ff; border-color: var(--blue); transform: translateY(-2px) scale(1.06); box-shadow: 0 5px 14px rgba(37,99,235,0.14); }
+      .eye-btn:active { transform: translateY(0) scale(0.95); box-shadow: none; transition: transform 0.1s ease; }
+
+      /* ── range ── */
+      .range-row { display: flex; align-items: center; gap: 12px; }
+
+      input[type="range"] {
+        flex: 1; height: 40px; padding: 0;
+        border: none; box-shadow: none;
+        accent-color: var(--blue); cursor: pointer;
+        background: none;
+      }
+
+      input[type="range"]:focus { box-shadow: none; }
+
+      .range-badge {
+        min-width: 46px; text-align: center;
+        padding: 5px 10px;
+        border-radius: 8px;
+        border: 1.5px solid var(--border-dark);
+        font-size: 12px; font-weight: 700;
+        background: var(--bg);
+        font-family: var(--mono);
+        color: var(--blue);
+        flex-shrink: 0;
+      }
+
+      /* ── toggle row ── */
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 10px 0;
+        border-bottom: 1px solid #eef2f8;
+        min-height: 58px;
+      }
+
+      .toggle-row:last-child { border-bottom: none; }
+
+      .toggle-info .toggle-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        display: block;
+        margin-bottom: 1px;
+      }
+
+      .toggle-info .toggle-hint {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .toggle {
+        position: relative;
+        flex-shrink: 0;
+        width: 44px; height: 26px;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+        background: #b8c5d8;
+        transition: background 0.30s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.30s cubic-bezier(0.22, 1, 0.36, 1), transform 0.25s cubic-bezier(0.34, 1.26, 0.64, 1);
+        outline: none;
+        box-shadow: inset 0 1px 1px rgba(15,23,42,0.12);
+      }
+
+      .toggle::before {
+        content: '';
+        position: absolute;
+        width: 20px; height: 20px;
+        border-radius: 50%;
+        background: #fff;
+        top: 3px; left: 3px;
+        /* Spring thumb — overshoots for premium feel */
+        transition: transform 0.40s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow: 0 1px 5px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.05);
+      }
+
+      .toggle[data-on="true"] {
+        background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
+        box-shadow: inset 0 1px 1px rgba(22,163,74,0.24), 0 0 0 2px rgba(34,197,94,0.18);
+      }
+      .toggle[data-on="true"]::before { transform: translateX(18px); }
+      .toggle:hover { transform: translateY(-1px) scale(1.05); box-shadow: inset 0 1px 1px rgba(15,23,42,0.10), 0 4px 12px rgba(15,23,42,0.18); }
+      .toggle:active { transform: translateY(0) scale(0.97); }
+      .toggle:active::before { transform: scaleX(1.22); transform-origin: left center; }
+      .toggle[data-on="true"]:active::before { transform: translateX(15px) scaleX(1.22); transform-origin: right center; }
+      .toggle:focus-visible { box-shadow: 0 0 0 3px rgba(37,99,235,0.25), inset 0 1px 1px rgba(15,23,42,0.10); }
+
+      /* ── log location ── */
+      #logLocationModeField { display: none; margin-top: 4px; }
+      #logLocationField { display: none; margin-top: 4px; }
+      #logFilenameField { display: none; margin-top: 4px; }
+
+      /* ════════════════════════════════════════════
+         HOTKEY SECTION
+      ════════════════════════════════════════════ */
+
+      .hotkey-list {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+
+      .hotkey-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+        transition:
+          border-color 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          background   0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow   0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          transform    0.22s cubic-bezier(0.34, 1.26, 0.64, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hotkey-item::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 3px;
+        background: var(--item-accent, transparent);
+        border-radius: 3px 0 0 3px;
+        transition: background 0.2s;
+      }
+
+      .hotkey-item:hover {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.08), 0 6px 18px rgba(37,99,235,0.09);
+        transform: translateY(-1px);
+        background: #fafcff;
+      }
+
+      .hotkey-item.recording {
+        border-color: var(--red);
+        background: var(--red-light);
+        box-shadow: 0 0 0 3px rgba(220,38,38,0.1);
+        animation: pulse-rec 1.4s ease-in-out infinite;
+      }
+
+      @keyframes pulse-rec {
+        0%, 100% { box-shadow: 0 0 0 3px rgba(220,38,38,0.1); }
+        50%       { box-shadow: 0 0 0 6px rgba(220,38,38,0.04); }
+      }
+
+      /* item text */
+      .hotkey-text { flex: 1; min-width: 0; }
+
+      .hotkey-name {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .hotkey-desc {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 0;
+      }
+
+      /* key combo display */
+      .hotkey-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      .key-combo {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+      }
+
+      .key-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 24px;
+        padding: 0 7px;
+        background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+        border: 1px solid #94a3b8;
+        border-bottom: 3px solid #64748b;
+        border-radius: 6px;
+        font-size: 10px;
+        font-weight: 700;
+        font-family: var(--mono);
+        color: #1e293b;
+        white-space: nowrap;
+        text-shadow: 0 1px 0 rgba(255,255,255,0.9);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+        letter-spacing: 0;
+      }
+
+      .key-plus {
+        font-size: 10px;
+        color: #94a3b8;
+        font-weight: 800;
+        user-select: none;
+      }
+
+      .hotkey-edit-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border: 1.5px solid var(--border-dark);
+        background: var(--surface);
+        color: var(--muted);
+        border-radius: 8px;
+        padding: 5px 9px;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: var(--font);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s;
+        flex-shrink: 0;
+      }
+
+      .hotkey-edit-btn {
+        transition:
+          border-color 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          color        0.22s ease,
+          background   0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          transform    0.22s cubic-bezier(0.34, 1.26, 0.64, 1),
+          box-shadow   0.22s ease;
+      }
+      .hotkey-edit-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+        background: var(--blue-light);
+        transform: translateY(-1px) scale(1.03);
+        box-shadow: 0 4px 10px rgba(37,99,235,0.12);
+      }
+      .hotkey-edit-btn:active {
+        transform: translateY(0) scale(0.97);
+        box-shadow: none;
+        transition: transform 0.1s ease;
+      }
+
+      .hotkey-reset-btn {
+        display: inline-flex;
+        align-items: center;
+        border: none;
+        background: none;
+        color: var(--muted);
+        border-radius: 6px;
+        padding: 4px 6px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: color 0.15s, background 0.15s;
+        flex-shrink: 0;
+        opacity: 0;
+        transition: opacity 0.15s, color 0.15s;
+      }
+
+      .hotkey-item:hover .hotkey-reset-btn { opacity: 1; }
+      .hotkey-reset-btn:hover { color: var(--red); background: var(--red-light); }
+
+      /* recording zone */
+      .recording-zone {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+      }
+
+      .recording-dot {
+        width: 8px; height: 8px;
+        background: var(--red);
+        border-radius: 50%;
+        animation: blink-dot 1s ease-in-out infinite;
+        flex-shrink: 0;
+      }
+
+      @keyframes blink-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50%       { opacity: 0.4; transform: scale(0.8); }
+      }
+
+      .recording-text {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--red);
+        white-space: nowrap;
+      }
+
+      .recording-cancel-btn {
+        border: 1.5px solid #fca5a5;
+        background: #fff;
+        color: var(--red);
+        border-radius: 7px;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: var(--font);
+        cursor: pointer;
+        transition: background 0.15s;
+        flex-shrink: 0;
+      }
+
+      .recording-cancel-btn:hover { background: var(--red-light); }
+
+      /* conflict toast */
+      .conflict-toast {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: #fef3c7;
+        border: 1px solid #fcd34d;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #92400e;
+        margin-top: 4px;
+      }
+
+      .conflict-toast.visible { display: flex; }
+
+
+      .model-wrap {
+        position: relative;
+        width: 100%;
+        min-width: 0;
+      }
+      .model-list {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 300px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background: #fff;
+        border: 1px solid #93c5fd;
+        border-radius: 10px;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25), 0 8px 24px rgba(59, 130, 246, 0.15);
+        display: none;
+        box-sizing: border-box;
+        z-index: 50;
+        animation: modelListFadeIn 0.15s ease both;
+      }
+      @keyframes modelListFadeIn {
+        from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      .model-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border-bottom: 1px solid #f1f5f9;
+        cursor: pointer;
+        min-width: 0;
+      }
+      .model-option:last-child { border-bottom: none; }
+      .model-option {
+        transition: background 0.16s cubic-bezier(0.22, 1, 0.36, 1), transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), color 0.16s ease;
+      }
+      .model-option:hover { background: #eff6ff; transform: translateX(3px); color: #1d4ed8; }
+      .model-option-main { flex: 1; min-width: 0; }
+      .model-option-id { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .model-option-name { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: monospace; }
+      .model-option-desc {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+        white-space: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        line-height: 1.35;
+        word-break: break-word;
+      }
+      .model-star {
+        border: none;
+        background: none;
+        color: #eab308;
+        font-size: 16px;
+        cursor: pointer;
+        line-height: 1;
+        padding: 2px;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+      .models-status { font-size: 11px; color: var(--muted); margin-top: -6px; }
+      .card-header-logo { width: 18px; height: 18px; border-radius: 6px; }
+
+      .multi-model-list {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        max-height: 280px;
+        overflow-y: auto;
+      }
+      .multi-model-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        background: #f8fbff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 8px 11px;
+        min-width: 0;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+        transition:
+          border-color 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow   0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          transform    0.25s cubic-bezier(0.34, 1.26, 0.64, 1),
+          background   0.22s cubic-bezier(0.22, 1, 0.36, 1);
+        animation: multi-row-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      @keyframes multi-row-in {
+        from { opacity: 0; transform: translateX(-6px) scale(0.98); }
+        to   { opacity: 1; transform: translateX(0) scale(1); }
+      }
+      .multi-model-row:hover {
+        border-color: #bfdbfe;
+        background: #f0f8ff;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.90), 0 5px 14px rgba(37,99,235,0.10), 0 0 0 1px rgba(147,197,253,0.25);
+        transform: translateY(-2px);
+      }
+      .multi-model-main { flex: 1; min-width: 0; }
+      .multi-model-id {
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .multi-model-meta {
+        font-size: 11px;
+        color: #94a3b8;
+        font-family: monospace;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .multi-model-del {
+        border: none;
+        background: transparent;
+        color: #94a3b8;
+        cursor: pointer;
+        font-size: 13px;
+        padding: 0 2px;
+        line-height: 1;
+        border-radius: 4px;
+        flex-shrink: 0;
+      }
+      .multi-model-del:hover { color: #dc2626; }
+      .multi-model-empty {
+        font-size: 12px;
+        color: #94a3b8;
+        padding: 6px 0;
+        text-align: center;
+      }
+      .multi-add-row {
+        display: flex;
+        gap: 8px;
+        align-items: stretch;
+        margin-top: 2px;
+      }
+      .multi-add-input-wrap {
+        flex: 1;
+        min-width: 0;
+      }
+      .multi-add-btn {
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .btn-secondary {
+        border: 1.5px solid var(--border-dark);
+        background: var(--surface);
+        color: var(--text-2);
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-size: 12px;
+        font-weight: 600;
+        font-family: var(--font);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition:
+          background    0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          border-color  0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          transform     0.28s cubic-bezier(0.34, 1.26, 0.64, 1),
+          box-shadow    0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          color         0.22s ease;
+      }
+
+      .btn-secondary:hover {
+        background: #eff6ff;
+        border-color: #93c5fd;
+        color: #1d4ed8;
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 6px 18px rgba(37,99,235,0.14);
+      }
+      .btn-secondary:active {
+        transform: translateY(0) scale(0.97);
+        box-shadow: none;
+        background: #dbeafe;
+        transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+      }
+      .btn-secondary:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.22);
+      }
+
+      .autosave-status-wrap {
+        display: flex;
+        justify-content: flex-end;
+        padding: 3px 6px 0;
+      }
+
+      .section-intro {
+        font-size: 12px;
+        color: var(--muted);
+        margin: -2px 0 2px;
+      }
+
+      .split-fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      /* ── Prompt cards ── */
+      .prompt-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .prompt-card {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        background: var(--bg);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        transition:
+          border-color 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow   0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          transform    0.22s cubic-bezier(0.34, 1.26, 0.64, 1);
+      }
+      .prompt-card:hover {
+        border-color: #bfdbfe;
+        box-shadow: 0 4px 14px rgba(37,99,235,0.08);
+        transform: translateY(-1px);
+      }
+
+      .prompt-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .prompt-card-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .prompt-card-desc {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .prompt-card textarea {
+        width: 100%;
+        min-height: 110px;
+        padding: 9px 11px;
+        font-family: var(--mono);
+        font-size: 11.5px;
+        line-height: 1.6;
+        color: var(--text-2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface);
+        resize: vertical;
+        transition: border-color 0.15s;
+        outline: none;
+      }
+
+      .prompt-card textarea:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+      }
+
+      .prompt-card textarea.is-modified {
+        border-color: #f59e0b;
+      }
+
+      .prompt-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .prompt-reset-btn {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--muted);
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        padding: 4px 11px;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s, background 0.15s;
+      }
+
+      .prompt-reset-btn {
+        transition:
+          color        0.22s ease,
+          border-color 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          background   0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          transform    0.22s cubic-bezier(0.34, 1.26, 0.64, 1);
+      }
+      .prompt-reset-btn:hover {
+        color: var(--red);
+        border-color: var(--red);
+        background: var(--red-light);
+        transform: translateY(-1px) scale(1.03);
+      }
+      .prompt-reset-btn:active { transform: translateY(0) scale(0.97); }
+
+      .prompt-modified-badge {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: #92400e;
+        background: #fef3c7;
+        border: 1px solid #fcd34d;
+        border-radius: 5px;
+        padding: 2px 7px;
+        display: none;
+      }
+
+      .prompt-modified-badge.visible {
+        display: inline-block;
+      }
+
+      @media (max-width: 960px) {
+        body { padding: 22px 14px 42px; }
+        .page-wrap { width: 100%; gap: 14px; }
+        .quizmind-logo { width: min(100%, 220px); }
+        .split-fields { grid-template-columns: 1fr; gap: 10px; }
+        .layout-shell { grid-template-columns: 1fr; gap: 14px; }
+        .sidebar-column {
+          position: static;
+          max-height: none;
+          border-radius: 14px;
+          overflow: visible;
+          padding-right: 0;
+        }
+        .sidebar-logo {
+          padding: 14px 14px 10px;
+        }
+        .settings-search {
+          padding: 8px 10px;
+        }
+        .sidebar-nav-wrapper {
+          overflow-x: auto;
+          padding: 8px 10px;
+        }
+        .sidebar-groups {
+          flex-direction: row;
+          gap: 10px;
+          min-width: max-content;
+        }
+        .sidebar-group {
+          min-width: 160px;
+          padding: 4px 0;
+        }
+        .sidebar-group + .sidebar-group {
+          border-top: none;
+          border-left: 1px solid rgba(203, 213, 225, 0.45);
+          padding-top: 4px;
+          padding-left: 10px;
+        }
+        .sidebar-link {
+          white-space: nowrap;
+          font-size: 12px;
+          padding: 7px 10px;
+        }
+        .settings-panel.is-active {
+          gap: 12px;
+        }
+      }
+
+      @media (max-width: 700px) {
+        body { padding: 16px 10px 36px; }
+        .hotkey-item {
+          align-items: flex-start;
+          flex-wrap: wrap;
+          row-gap: 8px;
+        }
+
+        .hotkey-right {
+          width: 100%;
+          justify-content: flex-end;
+        }
+
+        .multi-add-row {
+          flex-direction: column;
+        }
+
+        .multi-add-btn {
+          width: 100%;
+        }
+      }
+
+      /* ─── Toggle row hover ─── */
+      .toggle-row {
+        border-radius: 10px;
+        transition: background 0.20s cubic-bezier(0.22, 1, 0.36, 1);
+        padding: 10px 6px;
+        margin: 0 -6px;
+      }
+      .toggle-row:hover { background: rgba(239, 246, 255, 0.55); }
+
+      /* ─── Textarea enhanced focus ─── */
+      .prompt-card textarea {
+        transition:
+          border-color 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow   0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          transform    0.22s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .prompt-card textarea:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.12), 0 4px 14px rgba(37,99,235,0.08);
+        transform: translateY(-1px);
+      }
+
+      /* ─── Sidebar column glass highlight ─── */
+      .sidebar-column {
+        transition: box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.28s ease;
+      }
+      .sidebar-column:hover {
+        box-shadow: 0 16px 44px rgba(15,23,42,0.11), 0 1px 0 rgba(255,255,255,0.65) inset, inset 0 0 0 1px rgba(255,255,255,0.22);
+      }
+
+      /* ─── Range badge pill animation ─── */
+      .range-badge {
+        transition: background 0.22s ease, border-color 0.22s ease, color 0.22s ease, transform 0.22s cubic-bezier(0.34, 1.26, 0.64, 1);
+      }
+
+      /* ─── Section jump highlight animation on search ─── */
+      @keyframes section-jump-flash {
+        0%   { box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
+        50%  { box-shadow: 0 0 0 8px rgba(37,99,235,0); }
+        100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+      }
+
+      /* ─── Status text fade animation ─── */
+      @keyframes status-fade-in {
+        from { opacity: 0; transform: translateY(-3px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      #status:not(:empty) { animation: status-fade-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation: none !important;
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
+
+        .toggle:hover,
+        .toggle:active,
+        .card:hover,
+        .sidebar-link:hover,
+        .hotkey-item:hover,
+        .btn-secondary:hover,
+        .theme-preset-chip:hover {
+          transform: none !important;
+        }
+      }
+
+      #status {
+        font-size: 12px;
+        font-weight: 500;
+        min-height: 18px;
+      }
+
+      .status-ok   { color: var(--green); }
+      .status-err  { color: var(--red); }
+      .status-info { color: var(--muted); }
+
+      /* ── hotkey color themes per item ── */
+      [data-settings-key="custom_hotkey_screenshot"] { --item-accent: #7c3aed; --item-bg: #f5f3ff; }
+      [data-settings-key="custom_hotkey_yandex_question"] { --item-accent: #2563eb; --item-bg: #eff6ff; }
+      [data-settings-key="custom_hotkey_reset_windows"] { --item-accent: #0f766e; --item-bg: #ecfeff; }
+      [data-settings-key="custom_hotkey_toggle_extension"] { --item-accent: #be123c; --item-bg: #fff1f2; }
+      [data-settings-key="custom_hotkey_settings"]   { --item-accent: #0891b2; --item-bg: #ecfeff; }
+      [data-settings-key="custom_hotkey_logs"]        { --item-accent: #d97706; --item-bg: #fffbeb; }
+
+      /* ════════════════════════════════════════════
+         THEMES SECTION
+      ════════════════════════════════════════════ */
+
+      /* Preset grid */
+      .theme-presets-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        gap: 8px;
+        margin-top: 6px;
+      }
+
+      .theme-preset-chip {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 8px 8px;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+        cursor: pointer;
+        transition:
+          border-color 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow   0.25s cubic-bezier(0.22, 1, 0.36, 1),
+          transform    0.28s cubic-bezier(0.34, 1.36, 0.64, 1),
+          background   0.25s cubic-bezier(0.22, 1, 0.36, 1);
+        user-select: none;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .theme-preset-chip:hover {
+        border-color: #93c5fd;
+        background: #f0f8ff;
+        transform: translateY(-3px) scale(1.04);
+        box-shadow: 0 8px 20px rgba(37,99,235,0.14), 0 0 0 1px rgba(147,197,253,0.3);
+      }
+
+      .theme-preset-chip:active {
+        transform: translateY(-1px) scale(1.00);
+        transition: transform 0.12s ease;
+      }
+
+      .theme-preset-chip.is-active {
+        border-color: var(--blue);
+        background: var(--blue-light);
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.14), 0 6px 16px rgba(37,99,235,0.18);
+        transform: translateY(-1px);
+      }
+
+      .theme-preset-chip.is-active::after {
+        content: '✓';
+        position: absolute;
+        top: 4px;
+        right: 6px;
+        font-size: 10px;
+        font-weight: 800;
+        color: var(--blue);
+      }
+
+      .theme-preset-preview {
+        width: 48px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1px solid rgba(0,0,0,0.08);
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        flex-shrink: 0;
+      }
+
+      .theme-preset-preview-swatch {
+        display: block;
+      }
+
+      .theme-preset-name {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--text-2);
+        text-align: center;
+        line-height: 1.2;
+      }
+
+      /* Surface tabs */
+      .theme-surface-tabs {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1px;
+        margin-bottom: 14px;
+      }
+
+      .theme-surface-tab {
+        padding: 7px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s;
+        margin-bottom: -1px;
+        border-radius: 8px 8px 0 0;
+        font-family: var(--font);
+      }
+
+      .theme-surface-tab:hover { color: var(--text-2); }
+
+      .theme-surface-tab.is-active {
+        color: var(--blue);
+        border-bottom-color: var(--blue);
+        background: rgba(37,99,235,0.04);
+      }
+
+      .theme-surface-panel { display: none; }
+      .theme-surface-panel.is-active { display: block; }
+
+      /* Custom color pickers */
+      .theme-custom-colors {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+      }
+
+      .theme-custom-colors.is-visible { display: flex; }
+
+      .theme-color-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .theme-color-row label {
+        flex: 1;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-2);
+        min-width: 0;
+        cursor: pointer;
+      }
+
+      .theme-color-input-wrap {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+
+      input[type="color"].theme-color-picker {
+        width: 34px;
+        height: 34px;
+        border: 1.5px solid var(--border-dark);
+        border-radius: 8px;
+        padding: 2px;
+        background: var(--surface);
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .theme-color-clear {
+        width: 22px;
+        height: 22px;
+        border: none;
+        background: none;
+        color: var(--muted);
+        font-size: 13px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: color 0.15s, background 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        padding: 0;
+      }
+
+      .theme-color-clear:hover { color: var(--red); background: var(--red-light); }
+
+      /* Section divider */
+      .theme-section-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 6px 0 14px;
+      }
+
+      /* Reset row */
+      .theme-reset-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding-top: 6px;
+        border-top: 1px solid var(--border);
+        margin-top: 4px;
+      }
+
+      .theme-reset-row .btn-secondary {
+        font-size: 11px;
+        padding: 6px 12px;
+        color: var(--muted);
+      }
+
+      .theme-reset-row .btn-secondary:hover {
+        color: var(--red);
+        border-color: var(--red);
+        background: var(--red-light);
+      }
+
+      /* Chameleon note */
+      .theme-chameleon-note {
+        display: flex;
+        gap: 8px;
+        padding: 10px 12px;
+        background: rgba(234, 179, 8, 0.06);
+        border: 1px solid rgba(234, 179, 8, 0.25);
+        border-radius: 10px;
+        font-size: 11.5px;
+        color: #78350f;
+        line-height: 1.45;
+      }
+
+      .theme-chameleon-note-icon {
+        font-size: 15px;
+        flex-shrink: 0;
+        line-height: 1.4;
+      }
+
+      /* Subsection title */
+      .theme-subsection-title {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        padding: 12px 0 4px;
+      }
+
+      .course-pack-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .course-pack-file-input { display: none; }
+
+      .course-pack-summary {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px 14px;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--bg);
+      }
+
+      .course-pack-summary[hidden] { display: none; }
+
+      .course-pack-summary-item { min-width: 0; }
+      .course-pack-summary-label { display: block; color: var(--muted); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+      .course-pack-summary-value { display: block; margin-top: 3px; color: var(--text); font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+      .course-pack-message { min-height: 18px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+      .course-pack-message[data-type="error"] { color: var(--red); }
+      .course-pack-message[data-type="success"] { color: #15803d; }
+      .course-pack-clear { color: var(--red); }
+      .course-pack-actions .btn-secondary:disabled,
+      #section-course-pack .toggle:disabled { opacity: .48; cursor: not-allowed; transform: none; box-shadow: none; }
+
+      @media (max-width: 640px) {
+        .course-pack-summary { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrap">
+
+      <div class="layout-shell">
+        <div class="sidebar-column">
+          <!-- Logo -->
+          <div class="sidebar-logo">
+            <img class="quizmind-logo" src="assets/quizmind-logo.svg" alt="QuizMind Yandex" />
+            <span class="sidebar-edition">Yandex Forms</span>
+          </div>
+
+          <!-- Search -->
+          <div class="settings-search" role="search">
+            <label class="settings-search-label" for="settingsSearch" data-i18n="options.search_label">Search settings</label>
+            <input id="settingsSearch" type="search" placeholder="Search settings..." data-i18n-placeholder="options.search_placeholder" autocomplete="off" />
+          </div>
+
+          <!-- Navigation -->
+          <div class="sidebar-nav-wrapper">
+            <aside class="settings-sidebar" aria-label="Settings navigation">
+              <div class="sidebar-title" data-i18n="options.sections">Sections</div>
+              <nav class="sidebar-groups" aria-label="Settings groups">
+                <div class="sidebar-group" data-group="general">
+                  <div class="sidebar-group-title" data-i18n="options.group_general">General</div>
+                  <div class="sidebar-nav">
+                    <a class="sidebar-link" href="#section-api-key" data-target="section-api-key" data-i18n="options.nav_api">API</a>
+                    <a class="sidebar-link" href="#section-models" data-target="section-models" data-i18n="options.nav_models">Models</a>
+                    <a class="sidebar-link" href="#section-language" data-target="section-language" data-i18n="options.nav_language">Language</a>
+                    <a class="sidebar-link" href="#section-themes" data-target="section-themes" data-i18n="options.nav_themes">Themes</a>
+                  </div>
+                </div>
+
+                <div class="sidebar-group" data-group="interaction">
+                  <div class="sidebar-group-title" data-i18n="options.group_interaction">Interaction</div>
+                  <div class="sidebar-nav">
+                    <a class="sidebar-link" href="#section-hotkeys" data-target="section-hotkeys" data-i18n="options.nav_hotkeys">Hotkeys</a>
+                    <a class="sidebar-link" href="#section-features" data-target="section-features" data-i18n="options.nav_features">Features</a>
+                    <a class="sidebar-link" href="#section-test-mode" data-target="section-test-mode" data-i18n="options.nav_test_mode">Test Mode</a>
+                    <a class="sidebar-link" href="#section-logging" data-target="section-logging" data-i18n="options.nav_logging">Logging</a>
+                  </div>
+                </div>
+
+                <div class="sidebar-group" data-group="ai">
+                  <div class="sidebar-group-title" data-i18n="options.group_ai">AI</div>
+                  <div class="sidebar-nav">
+                    <a class="sidebar-link" href="#section-multi-check" data-target="section-multi-check" data-i18n="options.nav_multi_check">Multi-Check</a>
+                    <a class="sidebar-link" href="#section-multi-check-screenshots" data-target="section-multi-check-screenshots" data-i18n="options.nav_multi_check_screenshots">Screenshot Multi-Check</a>
+                    <a class="sidebar-link" href="#section-screenshot-settings" data-target="section-screenshot-settings" data-i18n="options.nav_screenshot_settings">Screenshot Settings</a>
+                  </div>
+                </div>
+
+                <div class="sidebar-group" data-group="knowledge">
+                  <div class="sidebar-group-title" data-i18n="options.group_knowledge">Knowledge</div>
+                  <div class="sidebar-nav">
+                    <a class="sidebar-link" href="#section-course-pack" data-target="section-course-pack" data-i18n="options.nav_course_pack">Course Pack</a>
+                  </div>
+                </div>
+
+                <div class="sidebar-group" data-group="prompts">
+                  <div class="sidebar-group-title" data-i18n="options.group_prompts">Prompts</div>
+                  <div class="sidebar-nav">
+                    <a class="sidebar-link" href="#section-prompts" data-target="section-prompts" data-i18n="options.nav_prompts">Prompts</a>
+                  </div>
+                </div>
+              </nav>
+            </aside>
+          </div>
+        </div>
+
+        <main class="content-area">
+
+          <div id="searchEmptyState" class="search-empty-state" hidden>
+            <span data-i18n="options.search_empty">No matching settings found.</span>
+          </div>
+
+      <!-- API Key -->
+      <div class="settings-panel" id="section-api-key"><div class="card primary">
+        <div class="card-header">
+          <span class="card-header-icon" aria-hidden="true"><img src="assets/options-icons/key.svg" alt="" /></span>
+          <h2 data-i18n="api.title">API Key</h2>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label for="apiKey" data-i18n="api.label">RouterAI API Key</label>
+            <div class="api-key-row">
+              <input id="apiKey" type="password" placeholder="sk-or-v1-..." autocomplete="off" />
+              <button class="eye-btn" id="eyeBtn" data-i18n-title="api.show_key" data-i18n-aria-label="api.show_key" title="Show API key" aria-label="Show API key" type="button"><img class="eye-btn-icon" id="eyeBtnIcon" src="assets/options-icons/visibility.svg" alt="" aria-hidden="true" /></button>
+            </div>
+            <p class="hint" data-i18n="api.hint">Get your key from your RouterAI account.</p>
+          </div>
+        </div>
+      </div></div><!-- /section-api-key panel -->
+
+      <!-- Models -->
+      <div class="settings-panel" id="section-models"><div class="card primary models-card">
+        <div class="card-header">
+          <span class="card-header-icon" aria-hidden="true"><img src="assets/options-icons/cognition-2.svg" alt="" /></span>
+          <h2 data-i18n="models.title">Models</h2>
+        </div>
+        <div class="card-body">
+          <p id="modelsStatus" class="models-status" data-i18n="models.loading">Loading models…</p>
+          <div class="field">
+            <label for="modelText" data-i18n="models.label_text">Model for Text</label>
+            <div class="model-wrap">
+              <input id="modelText" type="text" placeholder="Enter model id" data-i18n-placeholder="models.placeholder" autocomplete="off" />
+              <div id="modelTextList" class="model-list"></div>
+            </div>
+            <p class="hint" data-i18n="models.hint_text">Shows models with type=chat. Search by id / name / short_description.</p>
+          </div>
+          <div class="field">
+            <label for="modelVision" data-i18n="models.label_screenshots">Model for Screenshots</label>
+            <div class="model-wrap">
+              <input id="modelVision" type="text" placeholder="Enter model id" data-i18n-placeholder="models.placeholder" autocomplete="off" />
+              <div id="modelVisionList" class="model-list"></div>
+            </div>
+            <p class="hint" data-i18n="models.hint_screenshots">Shows models with image in input modalities.</p>
+          </div>
+        </div>
+      </div></div><!-- /section-models panel -->
+
+      <!-- Language -->
+      <div class="settings-panel" id="section-language"><div class="card primary">
+        <div class="card-header">
+          <span class="card-header-icon" aria-hidden="true"><img src="assets/options-icons/key.svg" alt="" /></span>
+          <h2 data-i18n="language.title">Language</h2>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label for="uiLanguageSelect" data-i18n="language.label">Interface Language</label>
+            <select id="uiLanguageSelect">
+              <option value="en" data-i18n="language.en">English</option>
+              <option value="ru" data-i18n="language.ru">Russian</option>
+            </select>
+            <p class="hint" data-i18n="language.hint">Select the display language for the interface. The change takes effect immediately.</p>
+          </div>
+        </div>
+      </div></div><!-- /section-language panel -->
+
+      <!-- Themes -->
+      <div class="settings-panel" id="section-themes"><div class="card primary">
+        <div class="card-header">
+          <span class="card-header-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/>
+              <circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/>
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+            </svg>
+          </span>
+          <div>
+            <h2 data-i18n="themes.title">Themes</h2>
+            <p class="card-subtitle" data-i18n="themes.subtitle">Customize the look and feel of QuizMind Yandex</p>
+          </div>
+        </div>
+        <div class="card-body">
+
+          <!-- 1. Master toggle -->
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <span class="toggle-label" data-i18n="themes.enable">Enable Custom Themes</span>
+              <span class="toggle-hint" data-i18n="themes.enable_desc">Override the default appearance with a custom theme</span>
+            </div>
+            <button class="toggle" type="button" id="toggleThemeEnabled" data-on="false"></button>
+          </div>
+
+          <!-- 2. Theme controls (revealed when enabled) -->
+          <div id="themeControls" style="display:none">
+
+            <!-- Scope selector -->
+            <div class="field" style="margin-top:12px;">
+              <label for="themeScope" data-i18n="themes.scope_label">Apply themes to</label>
+              <select id="themeScope">
+                <option value="global" data-i18n="themes.scope_global">Everything (one theme for all)</option>
+                <option value="per_surface" data-i18n="themes.scope_per_surface">Each surface separately</option>
+              </select>
+              <p class="hint" data-i18n="themes.scope_hint">Global applies the same theme everywhere. Per-surface lets you pick different themes for each UI element.</p>
+            </div>
+
+            <!-- GLOBAL SECTION -->
+            <div id="themeGlobalSection">
+              <div class="theme-subsection-title" data-i18n="themes.global_preset_label">Theme preset</div>
+              <div class="theme-presets-grid" id="themeGlobalPresets">
+                <!-- Rendered by options.js -->
+              </div>
+              <!-- Global custom colors (expandable) -->
+              <div class="theme-custom-colors" id="themeGlobalCustomColors">
+                <p class="hint" data-i18n="themes.custom_colors_hint">Override individual colors from the selected preset. Leave empty to use the preset value.</p>
+                <div id="themeGlobalColorRows">
+                  <!-- Rendered by options.js -->
+                </div>
+              </div>
+            </div>
+
+            <!-- PER-SURFACE SECTION -->
+            <div id="themeSurfacesSection" style="display:none">
+              <div class="theme-surface-tabs" id="themeSurfaceTabs">
+                <button class="theme-surface-tab is-active" data-surface="widget" type="button" data-i18n="themes.surface_widget">Widget & Answer</button>
+                <button class="theme-surface-tab" data-surface="popup" type="button" data-i18n="themes.surface_popup">Popup</button>
+                <button class="theme-surface-tab" data-surface="settings" type="button" data-i18n="themes.surface_settings">Settings</button>
+                <button class="theme-surface-tab" data-surface="inpage" type="button" data-i18n="themes.surface_inpage">In-Page</button>
+              </div>
+              <!-- Panels for each surface - rendered by options.js -->
+              <div id="themeSurfacePanels"></div>
+            </div>
+
+            <!-- Reset row -->
+            <div class="theme-reset-row" style="margin-top:14px;">
+              <button id="btnResetTheme" class="btn-secondary" type="button" data-i18n="themes.reset_all">Reset all theme settings</button>
+            </div>
+
+          </div><!-- /themeControls -->
+
+          <!-- 3. Chameleon mode (independent toggle) -->
+          <div class="theme-subsection-title" data-i18n="themes.chameleon_title">Chameleon Mode</div>
+
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <span class="toggle-label" data-i18n="themes.chameleon_enable">Enable Chameleon Mode</span>
+              <span class="toggle-hint" data-i18n="themes.chameleon_enable_desc">Automatically adapt colors to match the page you are on</span>
+            </div>
+            <button class="toggle" type="button" id="toggleChameleon" data-on="false"></button>
+          </div>
+
+          <!-- Chameleon controls (revealed when enabled) -->
+          <div id="chameleonControls" style="display:none">
+            <div class="field" style="margin-top:12px;">
+              <label for="chameleonScope" data-i18n="themes.chameleon_scope_label">Apply Chameleon to</label>
+              <select id="chameleonScope">
+                <option value="widget_inpage" data-i18n="themes.chameleon_scope_widget_inpage">Widget &amp; in-page windows only</option>
+                <option value="all" data-i18n="themes.chameleon_scope_all">All surfaces</option>
+              </select>
+            </div>
+            <div class="field" style="margin-top:10px;">
+              <label for="chameleonStrength" data-i18n="themes.chameleon_strength_label">Adaptation strength</label>
+              <select id="chameleonStrength">
+                <option value="soft" data-i18n="themes.chameleon_strength_soft">Soft — subtle tint</option>
+                <option value="medium" data-i18n="themes.chameleon_strength_medium">Medium — balanced blend</option>
+                <option value="strong" data-i18n="themes.chameleon_strength_strong">Strong — close match</option>
+              </select>
+            </div>
+            <div class="theme-chameleon-note" style="margin-top:10px;">
+              <span data-i18n="themes.chameleon_hint">Chameleon analyzes the page colors around the widget and adjusts colors for readability. Runs once when a window opens.</span>
+            </div>
+            <div class="theme-reset-row" style="margin-top:10px; border-top:none; padding-top:0;">
+              <button id="btnResetChameleon" class="btn-secondary" type="button" data-i18n="themes.reset_chameleon">Reset Chameleon settings</button>
+            </div>
+          </div><!-- /chameleonControls -->
+
+        </div><!-- /card-body -->
+      </div></div><!-- /section-themes panel -->
+
+      <!-- Hotkeys -->
+      <div class="settings-panel" id="section-hotkeys"><div class="card primary">
+        <div class="card-header">
+          <span class="card-header-icon" aria-hidden="true"><img src="assets/options-icons/keyboard.svg" alt="" /></span>
+          <h2 data-i18n="hotkeys.title">Hotkeys</h2>
+        </div>
+        <div class="card-body">
+
+          <div class="hotkey-list" id="hotkeyList">
+
+            <!-- Screenshot -->
+            <div class="hotkey-item" data-settings-key="custom_hotkey_screenshot" data-default="Ctrl+Shift+U">
+              <div class="hotkey-text">
+                <div class="hotkey-name" data-i18n="hotkeys.screenshot">Screenshot</div>
+                <div class="hotkey-desc" data-i18n="hotkeys.screenshot_desc">Select area and get an answer from the image</div>
+              </div>
+              <div class="hotkey-right">
+                <div class="key-combo" data-combo-display></div>
+                <button class="hotkey-reset-btn" data-i18n-title="hotkeys.reset_default" title="Reset to default">↺</button>
+                <button class="hotkey-edit-btn" data-i18n="hotkeys.edit_btn">✏ Edit</button>
+              </div>
+              <div class="recording-zone">
+                <div class="recording-dot"></div>
+                <div class="recording-text" data-i18n="hotkeys.recording_text">Press a key combination…</div>
+                <button class="recording-cancel-btn" type="button" data-i18n="hotkeys.cancel">Cancel</button>
+              </div>
+            </div>
+
+            <!-- Yandex Forms HTML Question -->
+            <div class="hotkey-item" data-settings-key="custom_hotkey_yandex_question" data-default="Ctrl+Shift+H">
+              <div class="hotkey-text">
+                <div class="hotkey-name" data-i18n="hotkeys.yandex_question">Yandex Forms Question</div>
+                <div class="hotkey-desc" data-i18n="hotkeys.yandex_question_desc">Solve the selected, focused, hovered, or unambiguous visible question</div>
+              </div>
+              <div class="hotkey-right">
+                <div class="key-combo" data-combo-display></div>
+                <button class="hotkey-reset-btn" data-i18n-title="hotkeys.reset_default" title="Reset to default">↺</button>
+                <button class="hotkey-edit-btn" data-i18n="hotkeys.edit_btn">✏ Edit</button>
+              </div>
+              <div class="recording-zone">
+                <div class="recording-dot"></div>
+                <div class="recording-text" data-i18n="hotkeys.recording_text">Press a key combination…</div>
+                <button class="recording-cancel-btn" type="button" data-i18n="hotkeys.cancel">Cancel</button>
+              </div>
+            </div>
+
+            <!-- Reset Windows -->
+            <div class="hotkey-item" data-settings-key="custom_hotkey_reset_windows" data-default="Ctrl+Shift+R">
+              <div class="hotkey-text">
+                <div class="hotkey-name" data-i18n="hotkeys.reset_windows">Reset Windows</div>
+                <div class="hotkey-desc" data-i18n="hotkeys.reset_windows_desc">Reset widget window positions and sizes</div>
+              </div>
+              <div class="hotkey-right">
+                <div class="key-combo" data-combo-display></div>
+                <button class="hotkey-reset-btn" data-i18n-title="hotkeys.reset_default" title="Reset to default">↺</button>
+                <button class="hotkey-edit-btn" data-i18n="hotkeys.edit_btn">✏ Edit</button>
+              </div>
+              <div class="recording-zone">
+                <div class="recording-dot"></div>
+                <div class="recording-text" data-i18n="hotkeys.recording_text">Press a key combination…</div>
+                <button class="recording-cancel-btn" type="button" data-i18n="hotkeys.cancel">Cancel</button>
+              </div>
+            </div>
+
+            <!-- Toggle extension -->
+            <div class="hotkey-item" data-settings-key="custom_hotkey_toggle_extension" data-default="Ctrl+Shift+L">
+              <div class="hotkey-text">
+                <div class="hotkey-name" data-i18n="hotkeys.toggle_ext">Enable / Disable Extension</div>
+                <div class="hotkey-desc" data-i18n="hotkeys.toggle_ext_desc">Toggles the Extension Enabled state</div>
+              </div>
+              <div class="hotkey-right">
+                <div class="key-combo" data-combo-display></div>
+                <button class="hotkey-reset-btn" data-i18n-title="hotkeys.reset_default" title="Reset to default">↺</button>
+                <button class="hotkey-edit-btn" data-i18n="hotkeys.edit_btn">✏ Edit</button>
+              </div>
+              <div class="recording-zone">
+                <div class="recording-dot"></div>
+                <div class="recording-text" data-i18n="hotkeys.recording_text">Press a key combination…</div>
+                <button class="recording-cancel-btn" type="button" data-i18n="hotkeys.cancel">Cancel</button>
+              </div>
+            </div>
+
+            <div class="hotkey-item" id="logsHotkeyItem" data-settings-key="custom_hotkey_logs" data-default="Alt+L" style="display:none">
+              <div class="hotkey-text">
+                <div class="hotkey-name" data-i18n="hotkeys.logs">Open / Close Logs</div>
+                <div class="hotkey-desc" data-i18n="hotkeys.logs_desc">Open or close the Logs window</div>
+              </div>
+              <div class="hotkey-right">
+                <div class="key-combo" data-combo-display></div>
+                <button class="hotkey-reset-btn" data-i18n-title="hotkeys.reset_default" title="Reset to default">↺</button>
+                <button class="hotkey-edit-btn" data-i18n="hotkeys.edit_btn">✏ Edit</button>
+              </div>
+              <div class="recording-zone">
+                <div class="recording-dot"></div>
+                <div class="recording-text" data-i18n="hotkeys.recording_text">Press a key combination…</div>
+                <button class="recording-cancel-btn" type="button" data-i18n="hotkeys.cancel">Cancel</button>
+              </div>
+            </div>
+
+            </div>
+
+
+          <!-- Conflict warning -->
+          <div class="conflict-toast" id="conflictToast">
+            ⚠️ <span id="conflictText">This combination is already taken</span>
+          </div>
+
+          <p class="hint" style="margin-top:4px;" data-i18n="hotkeys.hint">
+            Click ✏ Edit, then press a new key combination on the keyboard. At least one modifier required: Ctrl, Alt, Meta. Press Esc to cancel.
+          </p>
+          <p class="hint" style="margin-top:8px;" data-i18n="hotkeys.chat_hint">
+            Chat: Send message → Enter, New line → Cmd+Enter / Ctrl+Enter.
+          </p>
+        </div>
+      </div></div><!-- /section-hotkeys panel -->
+
+      <!-- Features -->
+      <div class="settings-panel" id="section-features"><div class="card secondary compact-card">
+        <div class="card-header">
+          <span class="card-header-icon" aria-hidden="true"><img src="assets/options-icons/fit-screen.svg" alt="" /></span>
+          <h2 data-i18n="features.title">Features</h2>
+        </div>
+        <div class="card-body">
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <span class="toggle-label" data-i18n="features.auto_screenshot">Auto-send Screenshot</span>
+              <span class="toggle-hint" data-i18n="features.auto_screenshot_desc">Send immediately to the model without selecting an area</span>
+            </div>
+            <button class="toggle" type="button" id="toggleAutoScreenshot" data-on="false"></button>
+          </div>
+        </div>
+      </div></div><!-- /section-features panel -->
+
+      <!-- Test Mode -->
+      <div class="settings-panel" id="section-test-mode"><div class="card secondary compact-card">
+        <div class="card-header">
+          <span class="card-header-icon" aria-hidden="true"><img src="assets/options-icons/science.svg" alt="" /></span>
+          <h2 data-i18n="test_mode.title">Test Mode</h2>
+        </div>
+        <div class="card-body">
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <span class="toggle-label" data-i18n="test_mode.label">Test Mode</span>
+              <span class="toggle-hint" data-i18n="test_mode.hint">Mock responses without API requests</span>
+            </div>
+            <button class="toggle" type="button" id="toggleTestMode" data-on="false"></button>
+          </div>
+        </div>
+      </div></div><!-- /section-test-mode panel -->
+
+      <!-- Logging -->
+      <div class="settings-panel" id="section-logging"><div class="card secondary compact-card">
+        <div class="card-header">
+          <span class="card-header-icon" aria-hidden="true"><img src="assets/options-icons/download.svg" alt="" /></span>
+          <h2 data-i18n="logging.title">Logging</h2>
+        </div>
+        <div class="card-body">
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <span class="toggle-label" data-i18n="logging.save_logs">Save Logs</span>
+              <span class="toggle-hint" data-i18n="logging.save_logs_hint">Record requests and errors to files</span>
+            </div>
+            <button class="toggle" type="button" id="toggleLogs" data-on="false"></button>
+          </div>
+          <div class="field" id="logLocationModeField" style="padding-top:12px;">
+            <label for="logLocationMode" data-i18n="logging.location_mode">Save location</label>
+            <select id="logLocationMode">
+              <option value="subfolder" data-i18n="logging.in_subfolder">In subfolder</option>
+              <option value="root" data-i18n="logging.no_folder">Without folder (Downloads root)</option>
+            </select>
+          </div>
+          <div class="field" id="logLocationField" style="padding-top:8px;">
+            <label for="logLocation" data-i18n="logging.subfolder">Subfolder in Downloads</label>
+            <input id="logLocation" type="text" placeholder="MyExtensionLogs" />
+            <p class="hint" data-i18n="logging.subfolder_hint">Chrome extension can only save files to Downloads (including subfolders).</p>
+          </div>
+          <div class="field" id="logFilenameField" style="padding-top:8px;">
+            <label for="logFilename" data-i18n="logging.filename">Log file name</label>
+            <input id="logFilename" type="text" placeholder="qm-scan" data-i18n-placeholder="logging.filename_placeholder" />
+            <p class="hint" data-i18n="logging.filename_hint">Base file name without extension. Duplicates are numbered automatically: name.log, name (1).log …</p>
+          </div>
+          <div class="field" id="logSaveModeField" style="padding-top:8px;">
+            <label for="logSaveMode" data-i18n="logging.save_mode">Log save mode</label>
+            <select id="logSaveMode">
+              <option value="downloads" data-i18n="logging.save_auto">Auto-save to Downloads</option>
+              <option value="save_as" data-i18n="logging.save_as">Ask where to save (Save As)</option>
+            </select>
+            <p class="hint" data-i18n="logging.save_as_hint">In Save As mode, Chrome shows a system dialog where you can choose any folder for each file.</p>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <span class="toggle-label" data-i18n="logging.quiz_widget">Floating Answer Widget</span>
+              <span class="toggle-hint" data-i18n="logging.quiz_widget_hint">Show the floating answer popup during Quiz Page Scan</span>
+            </div>
+            <button class="toggle" type="button" id="toggleQuizShowWidget" data-on="true"></button>
+          </div>
+        </div>
+      </div></div><!-- /section-logging panel -->
+
+      <!-- Multi-check Models -->
+      <div class="settings-panel" id="section-multi-check"><div class="card secondary multi-card">
+        <div class="card-header">
+          <span class="card-header-icon" aria-hidden="true"><img src="assets/options-icons/search-check-2.svg" alt="" /></span>
+          <h2 data-i18n="multi_check.title">Multi-Check</h2>
+        </div>
+        <div class="card-body" style="gap:10px;">
+          <p class="section-intro" data-i18n="multi_check.intro">Models for parallel answer verification. The Multi-Check button in the widget sends the question to all models simultaneously.</p>
+          <div id="multiModelList" class="multi-model-list"></div>
+          <div class="multi-add-row">
+            <div class="model-wrap multi-add-input-wrap">
+              <input id="newMultiModel" type="text" placeholder="OpenAI: GPT-4o / openai/gpt-4o" />
+              <div id="multiModelCatalogList" class="model-list"></div>
+            </div>
+            <button class="btn-secondary multi-add-btn" id="addMultiModel" type="button" data-i18n="multi_check.add_btn">+ Add</button>
+          </div>
+        </div>
+      </div></div><!-- /section-multi-check panel -->
+
+      <!-- Multi-check Models (Screenshots) -->
+      <div class="settings-panel" id="section-multi-check-screenshots"><div class="card secondary multi-card">
+        <div class="card-header">
+          <span class="card-header-icon" aria-hidden="true"><img src="assets/options-icons/search-check-2.svg" alt="" /></span>
+          <h2 data-i18n="screenshot_multi_check.title">Multi-Check (Screenshots)</h2>
+        </div>
+        <div class="card-body" style="gap:10px;">
+          <p class="section-intro" data-i18n="screenshot_multi_check.intro">List of models for parallel answer verification from images. Uses the shared Multi Check toggle.</p>
+          <div id="screenshotMultiModelList" class="multi-model-list"></div>
+          <div class="multi-add-row">
+            <div class="model-wrap multi-add-input-wrap">
+              <input id="newScreenshotMultiModel" type="text" placeholder="Google: Gemini 3.1 Pro Preview / google/gemini-3.1-pro-preview" />
+              <div id="screenshotMultiModelCatalogList" class="model-list"></div>
+            </div>
+            <button class="btn-secondary multi-add-btn" id="addScreenshotMultiModel" type="button" data-i18n="multi_check.add_btn">+ Add</button>
+          </div>
+        </div>
+      </div></div><!-- /section-multi-check-screenshots panel -->
+
+      <!-- Screenshot model settings -->
+      <div class="settings-panel" id="section-screenshot-settings"><div class="card secondary">
+        <div class="card-header">
+          <span class="card-header-icon" aria-hidden="true"><img src="assets/options-icons/screenshot-monitor.svg" alt="" /></span>
+          <h2 data-i18n="screenshot_settings.title">Screenshot Model Settings</h2>
+        </div>
+        <div class="card-body">
+          <div class="split-fields">
+            <div class="field">
+              <label for="screenshotTemperature" data-i18n="screenshot_settings.temperature">Screenshot temperature</label>
+              <input id="screenshotTemperature" type="number" min="0" max="1" step="0.05" placeholder="0" />
+              <p class="hint" data-i18n="screenshot_settings.temperature_hint">Separate for screenshot requests. 0 = most stable answers.</p>
+            </div>
+            <div class="field">
+              <label for="screenshotMaxTokens" data-i18n="screenshot_settings.max_tokens">Screenshot max tokens</label>
+              <input id="screenshotMaxTokens" type="number" min="32" max="2048" step="1" placeholder="500" />
+              <p class="hint" data-i18n="screenshot_settings.max_tokens_hint">Response length limit for screenshots only.</p>
+            </div>
+          </div>
+        </div>
+      </div></div><!-- /section-screenshot-settings panel -->
+
+      <!-- Course Pack -->
+      <div class="settings-panel" id="section-course-pack"><div class="card primary">
+        <div class="card-header">
+          <span class="card-header-icon" aria-hidden="true"><img src="assets/options-icons/book.svg" alt="" /></span>
+          <h2 data-i18n="course_pack.title">Course Pack</h2>
+        </div>
+        <div class="card-body">
+          <p class="section-intro" data-i18n="course_pack.intro">Upload prepared lecture chunks and ground Chat and Yandex Forms answers in your course materials.</p>
+
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <span class="toggle-label" data-i18n="course_pack.enable">Enable Course Pack mode</span>
+              <span class="toggle-hint" data-i18n="course_pack.enable_hint">Use relevant lecture excerpts when answering.</span>
+            </div>
+            <button class="toggle" type="button" id="toggleCoursePackEnabled" data-on="false"></button>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <span class="toggle-label" data-i18n="course_pack.use_chat">Use in Chat</span>
+              <span class="toggle-hint" data-i18n="course_pack.use_chat_hint">Ground Chat requests in relevant course chunks.</span>
+            </div>
+            <button class="toggle" type="button" id="toggleCoursePackChat" data-on="true"></button>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <span class="toggle-label" data-i18n="course_pack.use_yandex">Use in Yandex Forms answers</span>
+              <span class="toggle-hint" data-i18n="course_pack.use_yandex_hint">Ground Yandex Forms text and image answers.</span>
+            </div>
+            <button class="toggle" type="button" id="toggleCoursePackYandex" data-on="true"></button>
+          </div>
+
+          <div class="course-pack-actions">
+            <button class="btn-secondary" id="coursePackUploadBtn" type="button" data-i18n="course_pack.upload">Upload Course Pack (.json)</button>
+            <button class="btn-secondary course-pack-clear" id="coursePackClearBtn" type="button" data-i18n="course_pack.clear">Clear Course Pack</button>
+            <input class="course-pack-file-input" id="coursePackFileInput" type="file" accept=".json,application/json" />
+          </div>
+
+          <div class="course-pack-summary" id="coursePackSummary" hidden>
+            <div class="course-pack-summary-item"><span class="course-pack-summary-label" data-i18n="course_pack.course_title">Course title</span><span class="course-pack-summary-value" id="coursePackTitle">—</span></div>
+            <div class="course-pack-summary-item"><span class="course-pack-summary-label">courseId</span><span class="course-pack-summary-value" id="coursePackId">—</span></div>
+            <div class="course-pack-summary-item"><span class="course-pack-summary-label" data-i18n="course_pack.language">Language</span><span class="course-pack-summary-value" id="coursePackLanguage">—</span></div>
+            <div class="course-pack-summary-item"><span class="course-pack-summary-label" data-i18n="course_pack.created_at">Created</span><span class="course-pack-summary-value" id="coursePackCreatedAt">—</span></div>
+            <div class="course-pack-summary-item"><span class="course-pack-summary-label" data-i18n="course_pack.lectures">Lectures</span><span class="course-pack-summary-value" id="coursePackLectureCount">0</span></div>
+            <div class="course-pack-summary-item"><span class="course-pack-summary-label" data-i18n="course_pack.chunks">Chunks</span><span class="course-pack-summary-value" id="coursePackChunkCount">0</span></div>
+          </div>
+          <div class="course-pack-message" id="coursePackMessage" role="status" aria-live="polite"></div>
+          <p class="hint"><span data-i18n="course_pack.guide_hint">Preparation instructions:</span> <a href="COURSE_PACK_GUIDE.md" target="_blank" rel="noopener" data-i18n="course_pack.guide_link">Course Pack guide</a></p>
+        </div>
+      </div></div><!-- /section-course-pack panel -->
+
+      <!-- Prompts -->
+      <div class="settings-panel" id="section-prompts"><div class="card primary">
+        <div class="card-header">
+          <span class="card-header-icon" aria-hidden="true"><img src="assets/options-icons/book.svg" alt="" /></span>
+          <h2 data-i18n="prompts.title">Prompts</h2>
+        </div>
+        <div class="card-body">
+          <p class="section-intro" style="margin-bottom:10px;" data-i18n="prompts.intro">
+            View and edit the AI prompts used by QuizMind Yandex. Changes are saved automatically.
+            If a prompt is modified, the custom version is used instead of the built-in one.
+          </p>
+          <div class="prompt-list" id="promptList">
+            <!-- Prompt cards rendered by options.js -->
+          </div>
+        </div>
+      </div></div><!-- /section-prompts panel -->
+
+      <div class="autosave-status-wrap" aria-live="polite">
+        <span id="status"></span>
+      </div>
+
+        </main>
+      </div>
+
+    </div><!-- .page-wrap -->
+
+    <script src="i18n.js"></script>
+    <script src="themeEngine.js"></script>
+    <script src="modelsService.js"></script>
+    <script src="promptsConfig.js"></script>
+    <script src="settingsStorage.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>

@@ -1,0 +1,21 @@
+<!doctype html>
+<html><body>
+  <form class="SurveyPage">
+    <div class="QuestionMarkup RadioQuestion RadioQuestion_withImage Question" id="image-question">
+      <div class="QuestionLabel-Text">Какая фигура изображена?</div>
+      <span aria-hidden="true"><img class="QuestionLayout-Image" src="question.png" alt=""></span>
+      <label class="RadioQuestion-Option"><input type="radio" name="image"><span class="OptionContent-Text">Круг</span><img class="OptionContent-Image" src="circle.png" alt=""></label>
+      <label class="RadioQuestion-Option"><input type="radio" name="image"><span class="OptionContent-Text">Квадрат</span><img class="OptionContent-Image" src="square.png" alt=""></label>
+    </div>
+
+    <div class="QuestionMarkup SelectQuestion Question" id="combo-question">
+      <div class="QuestionLabel-Text">Выберите цвет</div>
+      <button type="button" role="combobox" aria-controls="color-list" aria-expanded="false">Выберите</button>
+    </div>
+    <div id="color-list" role="listbox" hidden>
+      <div role="option">Красный</div>
+      <div role="option">Синий</div>
+    </div>
+    <div id="dynamic-host"></div>
+  </form>
+</body></html>

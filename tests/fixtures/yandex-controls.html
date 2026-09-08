@@ -1,0 +1,59 @@
+<!doctype html>
+<html><body>
+  <form class="SurveyPage">
+    <div class="QuestionMarkup Question intro"><div>Introductory text without a control</div></div>
+
+    <div class="QuestionMarkup RadioQuestion Question" id="radio-question">
+      <div class="QuestionLabel-Text">Сколько будет 2 + 2?</div>
+      <div class="RadioQuestion-Control" role="radiogroup">
+        <label class="RadioQuestion-Option"><input class="g-radio__control" type="radio" name="r" value="generated-91"><span class="OptionContent-Text">3</span></label>
+        <label class="RadioQuestion-Option"><input class="g-radio__control" type="radio" name="r" value="generated-24"><span class="OptionContent-Text">4</span></label>
+        <label class="RadioQuestion-Option"><input class="g-radio__control" type="radio" name="r" value="generated-77"><span class="OptionContent-Text">5</span></label>
+      </div>
+    </div>
+
+    <div class="QuestionMarkup CheckboxQuestion Question" id="checkbox-question">
+      <div class="QuestionLabel-Text">Выберите простые числа</div>
+      <label class="CheckboxQuestion-Option"><input type="checkbox"><span class="OptionContent-Text">2</span></label>
+      <label class="CheckboxQuestion-Option"><input type="checkbox"><span class="OptionContent-Text">3</span></label>
+      <label class="CheckboxQuestion-Option"><input type="checkbox"><span class="OptionContent-Text">4</span></label>
+    </div>
+
+    <div class="QuestionMarkup TextQuestion Question" id="text-question">
+      <div class="QuestionLabel-Text">Введите фамилию</div>
+      <input aria-label="Ответ">
+    </div>
+
+    <div class="QuestionMarkup TextQuestion Question" id="long-question">
+      <div class="QuestionLabel-Text">Объясните решение</div>
+      <textarea></textarea>
+    </div>
+
+    <div class="QuestionMarkup TextQuestion Question" id="number-question">
+      <div class="QuestionLabel-Text">Введите число</div>
+      <input type="number">
+    </div>
+
+    <div class="QuestionMarkup SelectQuestion Question" id="select-question">
+      <div class="QuestionLabel-Text">Выберите город</div>
+      <select><option disabled selected value="">Выберите</option><option value="msk">Москва</option><option value="spb">Санкт-Петербург</option></select>
+    </div>
+
+    <div class="QuestionMarkup DateQuestion Question" id="date-question">
+      <div class="QuestionLabel-Text">Дата рождения</div>
+      <input role="combobox" placeholder="ДД.ММ.ГГГГ">
+    </div>
+
+    <div class="QuestionMarkup MatrixQuestion Question" id="empty-matrix">
+      <div class="QuestionLabel-Text">Пустая матрица</div>
+      <div class="MatrixQuestion-Control"></div>
+    </div>
+
+    <div class="QuestionMarkup RadioQuestion Question" id="hidden-question" hidden>
+      <div class="QuestionLabel-Text">Скрытый вопрос</div>
+      <label><input type="radio"><span class="OptionContent-Text">Нельзя видеть</span></label>
+    </div>
+
+    <button id="submit" type="submit">Отправить</button>
+  </form>
+</body></html>

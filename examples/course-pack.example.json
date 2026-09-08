@@ -1,0 +1,45 @@
+{
+  "schema": "quizmind.coursepack.v1",
+  "courseId": "demo-product-marketing-2026",
+  "title": "Introduction to Product Marketing",
+  "language": "en",
+  "createdAt": "2026-06-30",
+  "description": "Synthetic example for testing QuizMind Course Pack mode.",
+  "lectures": [
+    {
+      "lectureId": "week-1-positioning",
+      "title": "Positioning and Audience",
+      "source": "Demo Lecture 1.pdf",
+      "pages": 12
+    },
+    {
+      "lectureId": "week-2-identity",
+      "title": "Visual Identity",
+      "source": "Demo Lecture 2.pdf",
+      "pages": 10
+    }
+  ],
+  "chunks": [
+    {
+      "id": "week-1-positioning-p4-definition",
+      "lectureId": "week-1-positioning",
+      "lectureTitle": "Positioning and Audience",
+      "source": "Demo Lecture 1.pdf",
+      "page": 4,
+      "heading": "Positioning definition",
+      "text": "Positioning describes how a product should be perceived by a selected audience relative to available alternatives.",
+      "keywords": ["positioning", "audience", "perception", "alternatives"]
+    },
+    {
+      "id": "week-2-identity-p3-elements",
+      "lectureId": "week-2-identity",
+      "lectureTitle": "Visual Identity",
+      "source": "Demo Lecture 2.pdf",
+      "page": 3,
+      "heading": "Identity elements",
+      "text": "A basic visual identity system combines a name, logo elements, colors, typography, and consistent usage rules.",
+      "keywords": ["visual identity", "name", "logo", "colors", "typography"],
+      "visualDescription": "Five connected cards show the name, logo, color palette, typography, and usage guidelines."
+    }
+  ]
+}

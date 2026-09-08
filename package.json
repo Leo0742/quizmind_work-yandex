@@ -1,0 +1,21 @@
+{
+  "name": "quizmind-yandex",
+  "version": "1.0.0",
+  "description": "Chrome extension optimized for Yandex Forms",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "test:browser": "node scripts/browser-smoke-test.js",
+    "check": "node scripts/check-extension.js",
+    "version:patch": "node scripts/bump-version.js patch",
+    "version:minor": "node scripts/bump-version.js minor",
+    "version:major": "node scripts/bump-version.js major"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0",
+    "puppeteer-core": "^25.10.0"
+  }
+}
