@@ -14,7 +14,12 @@ check(Array.isArray(manifest.host_permissions), 'host_permissions must be an arr
 check(manifest.host_permissions?.includes('<all_urls>'), '<all_urls> is required by Chrome captureVisibleTab for automatic visual-question capture');
 check(manifest.host_permissions?.includes('https://forms.yandex.ru/*'), 'Yandex Forms host permission is required');
 check(manifest.host_permissions?.includes('https://routerai.ru/*'), 'RouterAI host permission is required');
-check((manifest.content_scripts || []).every((entry) => (entry.matches || []).every((match) => match === 'https://forms.yandex.ru/*')), 'content scripts must remain restricted to Yandex Forms');
+const contentMatches = (manifest.content_scripts || []).flatMap((entry) => entry.matches || []);
+check(contentMatches.includes('http://*/*'), 'content scripts must support ordinary HTTP sites');
+check(contentMatches.includes('https://*/*'), 'content scripts must support ordinary HTTPS sites');
+check(!contentMatches.includes('<all_urls>'), 'content scripts must not run on browser-internal URL schemes');
+const resourceMatches = (manifest.web_accessible_resources || []).flatMap((entry) => entry.matches || []);
+check(resourceMatches.includes('http://*/*') && resourceMatches.includes('https://*/*'), 'widget assets must be available on ordinary HTTP and HTTPS sites');
 
 const referenced = [
   manifest.background?.service_worker,

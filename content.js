@@ -1206,8 +1206,9 @@
       const shouldSyncCurrent = !currentModel || currentModel === lastSettingsModel || Boolean(s.widget_current_model);
       if (preferred && shouldSyncCurrent) currentModel = preferred;
       lastSettingsModel = preferred;
-      quizScanEnabled = Boolean(s.quiz_page_scan_enabled);
-      quizAutoApplyEnabled = Boolean(s.quiz_auto_apply_enabled);
+      const yandexAutomationAllowed = isYandexFormsPage();
+      quizScanEnabled = Boolean(s.quiz_page_scan_enabled && yandexAutomationAllowed);
+      quizAutoApplyEnabled = Boolean(s.quiz_auto_apply_enabled && yandexAutomationAllowed);
       quizShowAnswerWidget = s.quiz_show_answer_widget !== false;
       QM_QUIZ?.ensureQuizScanObserver(quizScanEnabled);
       QM_QUIZ?.attachQuizHoverTracking();
@@ -4693,7 +4694,7 @@
     }
     if (!extensionEnabled) return;
     if (matchHotkey(e, cachedHK.resetWindows)) { e.preventDefault(); resetWindowLayouts(); return; }
-    if (matchHotkey(e, cachedHK.yandexQuestion)) { e.preventDefault(); await runYandexQuestionFlow(); return; }
+    if (matchHotkey(e, cachedHK.yandexQuestion) && isYandexFormsPage()) { e.preventDefault(); await runYandexQuestionFlow(); return; }
     if (matchHotkey(e, cachedHK.screenshot))   { e.preventDefault(); if (runtimeOk()) safeSendMessage({ type:'TRIGGER_SCREENSHOT_FROM_CONTENT' }); }
   }, true);
 
