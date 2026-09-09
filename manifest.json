@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "QuizMind Yandex",
-  "description": "QuizMind Yandex — помощник для вопросов и тестов в Яндекс Формах через RouterAI.",
+  "description": "QuizMind — поиск ответа по выделенному тексту и скриншоту на сайтах, с расширенной поддержкой Яндекс Форм.",
   "version": "1.0.0",
   "permissions": [
     "storage",
@@ -43,7 +43,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://forms.yandex.ru/*"],
+      "matches": ["http://*/*", "https://*/*"],
       "js": ["i18n.js", "routeraiUiPatch.js", "settingsStorage.js", "themeEngine.js", "content/qm-shared.js", "content/qm-windows.js", "content/qm-hotkeys.js", "content/qm-yandex-forms.js", "content/qm-quiz.js", "content/qm-markdown.js", "content/qm-logger.js", "content.js"],
       "css": ["styles.css"],
       "run_at": "document_idle"
@@ -72,7 +72,8 @@
         "assets/window-icons/*.svg"
       ],
       "matches": [
-        "https://forms.yandex.ru/*"
+        "http://*/*",
+        "https://*/*"
       ]
     }
   ]

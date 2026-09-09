@@ -24,7 +24,7 @@ const CHAT_MAX_TOKENS = 1200;
 const CHAT_PDF_OCR_PLUGINS = Object.freeze([
   Object.freeze({ id:'file-parser', pdf:Object.freeze({ engine:'mistral-ocr' }) }),
 ]);
-globalThis.__QM_TEST_STATS = { getAnswer:0, selection:0, yandex:0, visualCapture:0, visualAnswer:0 };
+globalThis.__QM_TEST_STATS = { getAnswer:0, selection:0, screenshot:0, yandex:0, visualCapture:0, visualAnswer:0 };
 function bumpTestStat(name) {
   if (Object.hasOwn(globalThis.__QM_TEST_STATS, name)) globalThis.__QM_TEST_STATS[name] += 1;
 }
@@ -139,7 +139,7 @@ const injectedTabs = new Set();
 chrome.tabs.onRemoved.addListener((tabId) => injectedTabs.delete(tabId));
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => { if (changeInfo.status === 'loading') injectedTabs.delete(tabId); });
 
-function canInjectIntoUrl(url) { return /^https:\/\/forms\.yandex\.ru\//i.test(String(url || '')); }
+function canInjectIntoUrl(url) { return /^https?:\/\//i.test(String(url || '')); }
 
 async function ensureContentInjected(tabId) {
   if (injectedTabs.has(tabId)) return;
@@ -210,7 +210,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       try {
         if (!(await isExtensionEnabled())) { sendResponse({ ok: false, error: 'Extension is disabled.', disabled: true }); return; }
         const tab = sender.tab;
-        if (!canInjectIntoUrl(tab?.url)) throw new Error('Capture is restricted to Yandex Forms.');
+        if (!/^https:\/\/forms\.yandex\.ru\//i.test(String(tab?.url || ''))) throw new Error('Capture is restricted to Yandex Forms.');
         const rect = message.payload?.rect || {};
         const viewport = message.payload?.viewport || {};
         if (!tab?.id || !Number.isInteger(tab.windowId)) throw new Error('Yandex Forms question tab is unavailable.');
@@ -241,7 +241,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     (async () => {
       try {
         if (!(await isExtensionEnabled())) { sendResponse({ ok: false, error: 'Extension is disabled.', disabled: true }); return; }
-        if (!canInjectIntoUrl(sender.tab?.url)) throw new Error('Visual answers are restricted to Yandex Forms.');
+        if (!/^https:\/\/forms\.yandex\.ru\//i.test(String(sender.tab?.url || ''))) throw new Error('Visual answers are restricted to Yandex Forms.');
         const questionText = String(message.payload?.questionText || '').trim();
         const questionType = String(message.payload?.questionType || 'unsupported').trim();
         const dataUrl = String(message.payload?.dataUrl || '');
@@ -385,7 +385,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       try {
         if (!(await isExtensionEnabled())) { sendResponse({ ok: false, error: 'Extension is disabled.', disabled: true }); return; }
         const tab = sender?.tab || await getActiveTab();
-        if (!tab) { sendResponse({ ok: false }); return; }
+        if (!tab || !canInjectIntoUrl(tab.url)) { sendResponse({ ok: false, error:'Screenshots are available only on ordinary web pages.' }); return; }
+        bumpTestStat('screenshot');
         await handleScreenshotFlow(tab);
         sendResponse({ ok: true });
       } catch (e) { sendResponse({ ok: false, error: e.message }); }
@@ -419,8 +420,9 @@ chrome.commands.onCommand.addListener(async (command) => {
     if (command !== 'screenshot-answer') return;
     if (!(await isExtensionEnabled())) return;
     const tab = await getActiveTab();
-    if (!tab?.id) return;
+    if (!tab?.id || !canInjectIntoUrl(tab.url)) return;
     globalThis.TALogger.logAction('Hotkey screenshot pressed');
+    bumpTestStat('screenshot');
     await handleScreenshotFlow(tab);
   } catch (e) { globalThis.TALogger.logError(e, { source: 'onCommand', command }); }
 });

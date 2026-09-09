@@ -1,6 +1,6 @@
-# QuizMind Yandex
+# QuizMind — universal Find and screenshot branch
 
-Chrome Extension (Manifest V3) for answering questions on `forms.yandex.ru` through RouterAI. This is a separate Yandex Forms edition of QuizMind; the popup and settings page carry a visible **Yandex Forms** badge.
+Chrome Extension (Manifest V3) for answering selected text and screenshots on ordinary HTTP/HTTPS sites through RouterAI. This branch retains the extended Yandex Forms adapter; the popup and settings page carry a visible **Yandex Forms** badge.
 
 ## Supported Yandex Forms controls
 
@@ -35,7 +35,9 @@ Enable **Quiz Page Scan** in Settings to prepare answers for every currently vis
 
 ## Selection workflow
 
-Selecting text displays the **Find** button. The selected text, cloned DOM Range, nearest Yandex question, and short local context are captured before any asynchronous work begins, so clicking the button does not lose the original selection.
+Selecting text on any ordinary HTTP/HTTPS page displays the **Find** button. The selected text, cloned DOM Range, nearest supported question, and short local context are captured before any asynchronous work begins, so clicking the button does not lose the original selection. On non-Yandex sites the result is displayed without scanning or changing page controls.
+
+The screenshot hotkey (`Ctrl+Shift+U`, or `Command+Shift+U` on macOS) also works on ordinary HTTP/HTTPS pages. Depending on Settings, it captures a user-selected region or the visible viewport and sends it to the configured vision model.
 
 ## RouterAI and privacy
 
@@ -58,16 +60,17 @@ Use test mode for verification and do not submit the forms.
 4. Click **Load unpacked** and select this repository directory.
 5. Open the extension popup, then Settings, and configure the RouterAI API key and text/vision models.
 
-Content scripts and web-accessible assets are restricted to `https://forms.yandex.ru/*`; network requests are made only to `https://routerai.ru/*`. Chrome's `captureVisibleTab` API requires either a temporary `activeTab` grant or the `<all_urls>` host capability. Quiz Page Scan must capture visual questions without an extra click, so this edition declares `<all_urls>` for that capture API. The packaged code still injects automatically only on Yandex Forms, validates the Yandex sender URL before visual capture, and never sends an uncropped full viewport to RouterAI.
+Content scripts and widget assets are available on ordinary `http://` and `https://` pages; network requests are made only to `https://routerai.ru/*`. Chrome's `captureVisibleTab` API requires either a temporary `activeTab` grant or the `<all_urls>` host capability, so this edition declares `<all_urls>` for screenshot capture. Quiz Page Scan, automatic answer application, the dedicated Yandex hotkey, and automatic visual-question capture remain gated to `forms.yandex.ru`.
 
 ## Development checks
 
 ```bash
 npm test
 npm run check
+npm run test:browser:generic
 ```
 
-`npm test` covers extraction, hidden/dynamic questions, image detection, answer matching, controlled application, selection snapshots, and non-submission behavior. `npm run check` validates the manifest, local file references, JavaScript syntax, host permissions, and Yandex-only content-script scope.
+`npm test` covers extraction, hidden/dynamic questions, image detection, answer matching, controlled application, selection snapshots, and non-submission behavior. `npm run check` validates the manifest, local file references, JavaScript syntax, and host permissions. `npm run test:browser:generic` verifies Find and screenshot triggering on a local non-Yandex page and proves that generic page controls are not auto-filled.
 
 ## Architecture
 
@@ -86,6 +89,7 @@ manifest.json
 
 ## Known limitations
 
+- Chrome internal pages, the Chrome Web Store, and other browser-protected schemes do not allow extension content-script injection.
 - Date/time questions are deliberately unsupported because calendar widgets need a separate semantic adapter.
 - A matrix shell without answer controls is ignored. Matrix layouts with stable accessible controls can be added with dedicated fixtures later.
 - A question image outside the viewport is not prefetched automatically; an explicit hotkey/request may scroll it into view before capture.
