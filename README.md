@@ -6,7 +6,7 @@
   <img src="assets/quizmind-logo.svg" alt="QuizMind Yandex Forms" width="112" />
 </p>
 
-# QuizMind Yandex
+# QuizMind Yandex Forms
 
 <p align="center">
   <b>Chrome Extension на Manifest V3 для AI-помощи по тексту, скриншотам и Яндекс Формам</b><br />
@@ -30,7 +30,7 @@
 
 ## Обзор
 
-QuizMind Yandex — Chrome-расширение с двумя связанными сценариями работы. На обычных HTTP/HTTPS-страницах оно умеет сохранять выделенный текст или скриншот и запрашивать ответ через RouterAI. На `forms.yandex.ru` дополнительно включается semantic adapter, который понимает поддерживаемые элементы формы, извлекает структурированное представление активного вопроса, умеет заранее готовить ответы для видимых вопросов и применяет ответ только при отдельно включённой настройке **Quiz Auto Apply**.
+QuizMind Yandex Forms — Chrome-расширение с двумя связанными сценариями работы. На обычных HTTP/HTTPS-страницах оно умеет сохранять выделенный текст или скриншот и запрашивать ответ через RouterAI. На `forms.yandex.ru` дополнительно включается semantic adapter, который понимает поддерживаемые элементы формы, извлекает структурированное представление активного вопроса, умеет заранее готовить ответы для видимых вопросов и применяет ответ только при отдельно включённой настройке **Quiz Auto Apply**.
 
 Yandex Forms workflow намеренно основан на видимой семантике страницы, а не на внутренних идентификаторах React. Для построения запроса используются текст вопроса, нативные типы controls, accessibility-атрибуты combobox, видимый текст вариантов и их текущий порядок в DOM. Сгенерированные ID и raw input values не используются как буквы ответа.
 
@@ -309,7 +309,7 @@ npm run test:browser:generic
 2. Включите **Developer mode**.
 3. Выберите **Load unpacked**.
 4. Укажите директорию этого репозитория.
-5. Откройте popup QuizMind Yandex → Settings.
+5. Откройте popup QuizMind Yandex Forms → Settings.
 6. Добавьте RouterAI API key и выберите text/vision models.
 
 Для release verification без расхода live model tokens можно включить **Test Mode**. Он возвращает mocked answers и предназначен для локальной проверки.
@@ -349,4 +349,4 @@ Browser smoke scripts покрывают Yandex-specific flow и generic HTTP/HT
 
 ## Статус
 
-Репозиторий содержит **QuizMind Yandex 1.0.0** — JavaScript Manifest V3 extension с отдельным semantic workflow для Яндекс Форм и универсальными Selected Text / Screenshot сценариями для обычных HTTP/HTTPS страниц. В репозитории находятся extension code, локальные tests, browser smoke tests и validation scripts; live AI behavior требует собственных RouterAI credentials пользователя.
+Репозиторий содержит **QuizMind Yandex Forms 1.0.0** — JavaScript Manifest V3 extension с отдельным semantic workflow для Яндекс Форм и универсальными Selected Text / Screenshot сценариями для обычных HTTP/HTTPS страниц. В репозитории находятся extension code, локальные tests, browser smoke tests и validation scripts; live AI behavior требует собственных RouterAI credentials пользователя.
