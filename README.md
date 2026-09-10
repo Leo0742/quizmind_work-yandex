@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/quizmind-logo.svg" alt="QuizMind Yandex" width="112" />
+  <img src="assets/quizmind-logo.svg" alt="QuizMind Yandex Forms" width="112" />
 </p>
 
 # QuizMind Yandex
